@@ -50,7 +50,6 @@ def logout():
     flash('Вы вышли из системы.', 'info')
     return redirect(request.referrer or url_for('routes.index'))
 
-# ---------------- Добавление животного ----------------
 @routes.route('/animal/add', methods=['GET', 'POST'])
 @login_required
 def animal_add():
@@ -82,7 +81,6 @@ def animal_add():
             flash('При сохранении данных возникла ошибка.', 'danger')
     return render_template('animal_form.html', form=form, action="Добавить")
 
-# ---------------- Редактирование животного ----------------
 @routes.route('/animal/<int:animal_id>/edit', methods=['GET', 'POST'])
 @login_required
 def animal_edit(animal_id):
@@ -108,7 +106,6 @@ def animal_edit(animal_id):
             flash('Ошибка при обновлении животного.', 'danger')
     return render_template('animal_form.html', form=form, action="Редактировать")
 
-# ---------------- Удаление животного ----------------
 @routes.route('/animal/<int:animal_id>/delete', methods=['POST'])
 @login_required
 def animal_delete(animal_id):
@@ -118,7 +115,6 @@ def animal_delete(animal_id):
 
     animal = Animal.query.get_or_404(animal_id)
     try:
-        # Удаление файлов с диска
         for photo in animal.photos:
             path = os.path.join('static/uploads', photo.filename)
             if os.path.exists(path):
@@ -131,7 +127,6 @@ def animal_delete(animal_id):
         flash('Ошибка при удалении.', 'danger')
     return redirect(url_for('routes.index'))
 
-# ---------------- Просмотр животного ----------------
 @routes.route('/animal/<int:animal_id>')
 def animal_detail(animal_id):
     animal = Animal.query.get_or_404(animal_id)
@@ -154,7 +149,6 @@ def animal_detail(animal_id):
         form=form
     )
 
-# ---------------- Подать заявку ----------------
 @routes.route('/animal/<int:animal_id>/adopt', methods=['POST'])
 @login_required
 def animal_adopt(animal_id):
@@ -184,7 +178,6 @@ def animal_adopt(animal_id):
         flash('Ошибка при отправке заявки.', 'danger')
     return redirect(url_for('routes.animal_detail', animal_id=animal_id, form=form))
 
-# ---------------- Модерация заявки ----------------
 @routes.route('/request/<int:req_id>/<action>', methods=['POST'])
 @login_required
 def adoption_request_action(req_id, action):
@@ -196,7 +189,6 @@ def adoption_request_action(req_id, action):
     if action == 'accept':
         req.status = 'accepted'
         req.animal.status = 'adopted'
-        # отклоняем остальные заявки
         other = AdoptionRequest.query.filter(
             AdoptionRequest.animal_id == req.animal_id,
             AdoptionRequest.id != req.id,
@@ -214,7 +206,6 @@ def adoption_request_action(req_id, action):
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
-        # Получаем роль "user"
         user_role = Role.query.filter_by(name='user').first()
         if not user_role:
             user_role = Role(name='user')

@@ -42,8 +42,6 @@
       <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adoptModal">Подать заявку на усыновление</button>
     {% endif %}
   {% endif %}
-
-  <!-- Модал для заявки -->
   <div class="modal fade" id="adoptModal" tabindex="-1">
     <div class="modal-dialog">
       <form method="post" action="{{ url_for('routes.animal_adopt', animal_id=animal.id) }}">
