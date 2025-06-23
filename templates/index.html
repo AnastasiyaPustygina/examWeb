@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Список животных</h1>
+{% if current_user.is_authenticated and current_user.is_admin() %}
+  <a class="btn btn-success mb-3" href="{{ url_for('routes.animal_add') }}">Добавить животное</a>
+{% endif %}
+
+<div class="row">
+  {% for animal in animals.items %}
+    <div class="col-md-6 mb-4">
+      <div class="card">
+        {% if animal.photos %}
+          <img src="{{ url_for('static', filename='uploads/' ~ animal.photos[0].filename) }}"
+               class="card-img-top" alt="{{ animal.name }}">
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title">{{ animal.name }}</h5>
+          <p>{{ animal.breed }}, {{ animal.age }} мес., {{ animal.gender }}, 
+             Статус: {{ animal.status }}<br>
+             Заявок: {{ animal.adoptions|length }}</p>
+          <a class="btn btn-primary btn-sm" href="{{ url_for('routes.animal_detail', animal_id=animal.id) }}">Просмотр</a>
+          {% if current_user.is_authenticated %}
+            {% if current_user.can_edit() %}
+              <a class="btn btn-warning btn-sm" href="{{ url_for('routes.animal_edit', animal_id=animal.id) }}">Редактировать</a>
+            {% endif %}
+            {% if current_user.is_admin() %}
+              <form method="post" action="{{ url_for('routes.animal_delete', animal_id=animal.id) }}" class="d-inline">
+                <button class="btn btn-danger btn-sm" type="submit">Удалить</button>
+              </form>
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<nav>
+  <ul class="pagination justify-content-center">
+    {% if animals.has_prev %}
+      <li class="page-item"><a class="page-link" href="{{ url_for('routes.index', page=animals.prev_num) }}">‹ Назад</a></li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">‹ Назад</span></li>
+    {% endif %}
+    {% if animals.has_next %}
+      <li class="page-item"><a class="page-link" href="{{ url_for('routes.index', page=animals.next_num) }}">Вперёд ›</a></li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">Вперёд ›</span></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endblock %}

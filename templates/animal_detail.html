@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+  <div class="col-md-6">
+    {% for photo in animal.photos %}
+      <img src="{{ url_for('static', filename='uploads/' ~ photo.filename) }}" class="img-fluid mb-2 view-image">
+    {% endfor %}
+  </div>
+  <div class="col-md-6">
+    <h2>{{ animal.name }}</h2>
+    <p>Порода: {{ animal.breed }}<br>
+       Возраст: {{ animal.age }} мес.<br>
+       Пол: {{ animal.gender }}<br>
+       Статус: {{ animal.status }}</p>
+    <div>{{ description_html|safe }}</div>
+  </div>
+</div>
+
+<hr>
+
+{% if current_user.is_authenticated %}
+
+  {% if current_user.is_staff() %}
+    <h4>Заявки</h4>
+    {% for req in requests %}
+      <div class="border p-2 mb-2">
+        <strong>{{ req.user.last_name }} {{ req.user.first_name }}</strong>,
+        {{ req.contact_info }}, {{ req.created_at.strftime('%d.%m.%Y %H:%M') }},
+        Статус: {{ req.status }}
+        <form method="post" action="{{ url_for('routes.adoption_request_action', req_id=req.id, action='accept') }}" class="d-inline">
+          <button class="btn btn-success btn-sm">Принять</button>
+        </form>
+        <form method="post" action="{{ url_for('routes.adoption_request_action', req_id=req.id, action='reject') }}" class="d-inline">
+          <button class="btn btn-danger btn-sm">Отклонить</button>
+        </form>
+      </div>
+    {% endfor %}
+  {% elif current_user.is_user() %}
+    {% if user_request %}
+      <p>Ваша заявка: {{ user_request.status }}, подана {{ user_request.created_at.strftime('%d.%m.%Y') }}, контакт: {{ user_request.contact_info }}</p>
+    {% else %}
+      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adoptModal">Подать заявку на усыновление</button>
+    {% endif %}
+  {% endif %}
+
+  <!-- Модал для заявки -->
+  <div class="modal fade" id="adoptModal" tabindex="-1">
+    <div class="modal-dialog">
+      <form method="post" action="{{ url_for('routes.animal_adopt', animal_id=animal.id) }}">
+        {{ form.hidden_tag() }}
+        <div class="modal-content">
+          <div class="modal-header"><h5>Ваши контактные данные</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+          <div class="modal-body">
+            <textarea name="contact_info" class="form-control" placeholder="Телефон, email..." required></textarea>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+            <button class="btn btn-primary" type="submit">Отправить заявку</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.querySelectorAll('.view-image').forEach(img => {
+    new Viewer(img.parentNode, {toolbar: false});
+  });
+</script>
+{% endblock %}

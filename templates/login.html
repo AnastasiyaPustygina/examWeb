@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Вход</h2>
+<form method="post">
+  {{ form.hidden_tag() }}
+  <div class="mb-3">{{ form.login.label }}{{ form.login(class="form-control") }}</div>
+  <div class="mb-3">{{ form.password.label }}{{ form.password(class="form-control") }}</div>
+  <div class="form-check mb-3">{{ form.remember_me() }} {{ form.remember_me.label }}</div>
+  <button class="btn btn-primary" type="submit">Войти</button>
+  <p>Нет аккаунта? <a href="{{ url_for('routes.register') }}">Зарегистрируйтесь</a></p>
+</form>
+{% endblock %}
