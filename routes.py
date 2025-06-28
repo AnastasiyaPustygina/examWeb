@@ -8,7 +8,6 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 import os
 import markdown
-import bleach
 
 from extentions import db
 from models import Animal, Photo, AdoptionRequest, User, Role

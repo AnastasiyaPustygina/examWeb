@@ -1,17 +1,22 @@
 {% extends 'base.html' %}
+{% import '_macros.html' as macros %}
+
 {% block content %}
 <h2>{{ action }} животное</h2>
 <form method="post" enctype="multipart/form-data" novalidate>
   {{ form.hidden_tag() }}
-  <div class="mb-3">{{ form.name.label }}{{ form.name(class="form-control") }}</div>
-  <div class="mb-3">{{ form.breed.label }}{{ form.breed(class="form-control") }}</div>
-  <div class="mb-3">{{ form.age.label }}{{ form.age(class="form-control") }}</div>
-  <div class="mb-3">{{ form.gender.label }}{{ form.gender(class="form-select") }}</div>
-  <div class="mb-3">{{ form.status.label }}{{ form.status(class="form-select") }}</div>
-  <div class="mb-3">{{ form.description.label }}{{ form.description(class="form-control") }}</div>
+
+  {{ macros.render_field(form.name) }}
+  {{ macros.render_field(form.breed) }}
+  {{ macros.render_field(form.age) }}
+  {{ macros.render_field(form.gender, 'form-select') }}
+  {{ macros.render_field(form.status, 'form-select') }}
+  {{ macros.render_field(form.description) }}
+
   {% if action == 'Добавить' %}
-    <div class="mb-3">{{ form.images.label }}{{ form.images(class="form-control", multiple=true) }}</div>
+    {{ macros.render_field(form.images) }}
   {% endif %}
+
   <button class="btn btn-primary" type="submit">{{ action }}</button>
 </form>
 {% endblock %}
